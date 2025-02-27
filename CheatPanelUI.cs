@@ -11,8 +11,7 @@ namespace EasyCheatPanel
         private UIDocument _uIDocument;
         private VisualElement _root;
 
-
-        void Awake()
+        void OnEnable()
         {
             _uIDocument = GetComponent<UIDocument>();
             _root = _uIDocument.rootVisualElement;

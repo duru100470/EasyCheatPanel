@@ -16,11 +16,11 @@ namespace EasyCheatPanel
     [AttributeUsage(AttributeTargets.Parameter)]
     public class DropdownAttribute : Attribute
     {
-        public object[] DropdownMenu;
+        public object[] Items;
 
-        public DropdownAttribute(object[] dropdown)
+        public DropdownAttribute(params object[] dropdown)
         {
-            DropdownMenu = dropdown;
+            Items = dropdown;
         }
     }
 }

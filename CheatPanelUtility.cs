@@ -107,36 +107,8 @@ namespace EasyCheatPanel
 
                     // 메소드의 파라미터 정보를 가져옵니다.
                     ParameterInfo[] parameters = methodData.Method.GetParameters();
-                    // 파라미터와 입력 필드를 함께 저장할 리스트 (나중에 값을 가져오기 위해)
-                    List<(ParameterInfo, TextField)> paramFields = new List<(ParameterInfo, TextField)>();
 
-                    // 파라미터가 있다면, 입력 필드들을 생성합니다.
-                    if (parameters.Length > 0)
-                    {
-                        foreach (ParameterInfo param in parameters)
-                        {
-                            // 수평으로 배치할 컨테이너 생성
-                            VisualElement paramContainer = new VisualElement();
-                            paramContainer.AddToClassList("param-container");
-
-                            // 파라미터 이름 레이블
-                            Label paramLabel = new Label(param.Name + ":");
-                            paramLabel.AddToClassList("param-label");
-                            paramContainer.Add(paramLabel);
-
-                            // 텍스트 입력 필드
-                            TextField inputField = new TextField();
-                            inputField.value = "";
-                            inputField.AddToClassList("param-text-field");
-                            paramContainer.Add(inputField);
-
-                            // 파라미터와 입력 필드 매핑 저장
-                            paramFields.Add((param, inputField));
-
-                            // 메소드 컨테이너에 파라미터 UI 추가
-                            methodContainer.Add(paramContainer);
-                        }
-                    }
+                    var paramFields = CreateParamView(parameters, methodContainer);
 
                     // 실행 버튼 생성 (버튼 클릭 시 입력 필드의 값을 가져와 파라미터로 사용)
                     Button invokeButton = new Button(() =>
@@ -176,9 +148,7 @@ namespace EasyCheatPanel
                     if (m < methodCount - 1)
                     {
                         VisualElement separator = new VisualElement();
-                        separator.style.height = 1;
-                        separator.style.backgroundColor = new StyleColor(Color.gray);
-                        separator.style.marginBottom = 2;
+                        separator.AddToClassList("separator");
                         methodsContainer.Add(separator);
                     }
                 }
@@ -186,6 +156,67 @@ namespace EasyCheatPanel
             }
 
             return root;
+        }
+
+        private static List<(ParameterInfo, BaseField<string>)> CreateParamView(ParameterInfo[] parameters, VisualElement methodContainer)
+        {
+            // 파라미터와 입력 필드를 함께 저장할 리스트 (나중에 값을 가져오기 위해)
+            List<(ParameterInfo, BaseField<string>)> paramFields = new();
+
+            // 파라미터가 있다면, 입력 필드들을 생성합니다.
+            if (parameters.Length > 0)
+            {
+                foreach (ParameterInfo param in parameters)
+                {
+                    // 수평으로 배치할 컨테이너 생성
+                    VisualElement paramContainer = new VisualElement();
+                    paramContainer.AddToClassList("param-container");
+
+                    // 파라미터 이름 레이블
+                    Label paramLabel = new Label(param.Name + ":");
+                    paramLabel.AddToClassList("param-label");
+                    paramContainer.Add(paramLabel);
+
+                    // DropdownAttribute가 있는지 검사
+                    DropdownAttribute dropdownAttr = param.GetCustomAttribute<DropdownAttribute>();
+                    BaseField<string> inputField;
+
+                    if (dropdownAttr != null)
+                    {
+                        // DropdownField 생성 및 어트리뷰트의 object[]를 문자열 리스트로 변환하여 아이템으로 사용
+                        DropdownField dropdownField = new DropdownField();
+                        List<string> choices = new List<string>();
+                        foreach (object item in dropdownAttr.Items)
+                        {
+                            choices.Add(item.ToString());
+                        }
+                        dropdownField.choices = choices;
+                        if (choices.Count > 0)
+                        {
+                            dropdownField.value = choices[0];
+                        }
+                        dropdownField.AddToClassList("param-dropdown-field");
+                        inputField = dropdownField;
+                    }
+                    else
+                    {
+                        // 기본 TextField 생성
+                        TextField textField = new TextField();
+                        textField.value = "";
+                        textField.AddToClassList("param-text-field");
+                        inputField = textField;
+                    }
+
+                    // 파라미터와 입력 필드 매핑 저장
+                    paramFields.Add((param, inputField));
+                    paramContainer.Add(inputField);
+
+                    // 메소드 컨테이너에 파라미터 UI 추가
+                    methodContainer.Add(paramContainer);
+                }
+            }
+
+            return paramFields;
         }
     }
 }

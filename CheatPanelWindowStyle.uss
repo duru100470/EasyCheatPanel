@@ -10,6 +10,14 @@
     min-width: 80px;
 }
 
+.param-text-field {
+    flex-grow: 1;
+}
+
+.param-dropdown-field {
+    flex-grow: 1;
+}
+
 .methods-container {
     flex-direction: column;
     margin-bottom: 10px;
@@ -22,4 +30,10 @@
 
 .invoke-button {
     margin-top: 2px;
+}
+
+.separator {
+    height: 1px;
+    background-color: gray;
+    margin-bottom: 2px;
 }

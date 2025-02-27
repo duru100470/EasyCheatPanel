@@ -1,16 +1,21 @@
 .title-label {
     font-size: 60px;
-    margin-top: 10px;
-    margin-bottom: 5px;
+    margin-top: 40px;
+    margin-bottom: 20px;
     -unity-font-style: bold;
 }
 
 .param-label {
     font-size: 40px;
-    min-width: 80px;
+    min-width: 40%;
 }
 
 .param-text-field {
+    font-size: 40px;
+    flex-grow: 1;
+}
+
+.param-dropdown-field {
     font-size: 40px;
     flex-grow: 1;
 }
@@ -22,10 +27,16 @@
 
 .param-container {
     flex-direction: row;
-    margin-bottom: 2px;
+    margin-bottom: 10px;
 }
 
 .invoke-button {
     font-size: 40px;
-    margin-top: 2px;
+    margin-top: 10px;
+}
+
+.separator {
+    height: 4px;
+    background-color: gray;
+    margin-bottom: 10px;
 }

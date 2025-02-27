@@ -17,6 +17,12 @@ public class Test : MonoBehaviour
         Debug.Log($"Number :{integer}");
     }
 
+    [CheatMethod("Dropdown Test")]
+    public void DropdownTestMethod([Dropdown(1, 2, 3, 4)] int integer)
+    {
+        Debug.Log($"Number :{integer}");
+    }
+
     [ContextMenu("TEST")]
     public void TestUtility()
     {
