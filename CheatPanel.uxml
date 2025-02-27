@@ -1,0 +1,10 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="False">
+    <Style src="project://database/Assets/EasyCheatPanel/CheatPanelUIStyle.uss?fileID=7433441132597879392&amp;guid=642cd6ce721841a47af12cbbb12ee10b&amp;type=3#CheatPanelUIStyle" />
+    <ui:VisualElement name="root" style="flex-grow: 1;">
+        <ui:VisualElement style="flex-grow: 1; flex-direction: row; height: 0; max-height: 100px; background-color: rgb(255, 255, 255); justify-content: space-between; margin-top: 15px; margin-right: 15px; margin-bottom: 0; margin-left: 15px; min-height: 100px;">
+            <ui:Button text="Refresh" parse-escape-sequences="true" display-tooltip-when-elided="true" name="refresh-btn" style="width: 30%; -unity-font: initial; font-size: 60px;" />
+            <ui:Button text="Close" parse-escape-sequences="true" display-tooltip-when-elided="true" name="close-btn" style="width: 30%; font-size: 60px;" />
+        </ui:VisualElement>
+        <ui:VisualElement name="panel" style="flex-grow: 1; background-color: rgb(255, 255, 255); margin-top: 15px; margin-right: 15px; margin-bottom: 15px; margin-left: 15px; padding-top: 40px; padding-right: 40px; padding-bottom: 40px; padding-left: 40px;" />
+    </ui:VisualElement>
+</ui:UXML>

@@ -1,0 +1,31 @@
+.title-label {
+    font-size: 60px;
+    margin-top: 10px;
+    margin-bottom: 5px;
+    -unity-font-style: bold;
+}
+
+.param-label {
+    font-size: 40px;
+    min-width: 80px;
+}
+
+.param-text-field {
+    font-size: 40px;
+    flex-grow: 1;
+}
+
+.methods-container {
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.param-container {
+    flex-direction: row;
+    margin-bottom: 2px;
+}
+
+.invoke-button {
+    font-size: 40px;
+    margin-top: 2px;
+}

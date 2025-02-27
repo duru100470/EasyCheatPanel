@@ -9,16 +9,30 @@ namespace EasyCheatPanel
     public class CheatPanelUI : MonoBehaviour
     {
         private UIDocument _uIDocument;
-        // Start is called before the first frame update
-        void Start()
+        private VisualElement _root;
+
+
+        void Awake()
         {
             _uIDocument = GetComponent<UIDocument>();
+            _root = _uIDocument.rootVisualElement;
 
-            var root = _uIDocument.rootVisualElement;
-            root.Clear();
+            var closeBtn = _root.Q<Button>("close-btn");
+            closeBtn.clicked += () => gameObject.SetActive(false);
+
+            var refreshBtn = _root.Q<Button>("refresh-btn");
+            refreshBtn.clicked += LoadPanel;
+
+            LoadPanel();
+        }
+
+        void LoadPanel()
+        {
+            var panel = _root.Q<VisualElement>("panel");
+            panel.Clear();
 
             var data = CheatPanelUtility.GetCheatMonoDataList();
-            root.Add(CheatPanelUtility.CreateCheatPanelView(data));
+            panel.Add(CheatPanelUtility.CreateCheatPanelView(data));
         }
     }
 }

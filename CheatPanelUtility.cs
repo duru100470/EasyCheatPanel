@@ -79,7 +79,7 @@ namespace EasyCheatPanel
 
         public static VisualElement CreateCheatPanelView(List<CheatMonoData> cheatMonoDatas)
         {
-            VisualElement root = new VisualElement();
+            var root = new ScrollView(ScrollViewMode.Vertical);
             root.Clear();
 
             // CheatPanelUtility에서 CheatMonoData 리스트를 가져옵니다.
@@ -89,16 +89,12 @@ namespace EasyCheatPanel
             {
                 // 게임오브젝트의 이름을 제목으로 표시 (큰 글씨)
                 Label titleLabel = new Label(cheatData.Name);
-                titleLabel.style.fontSize = 18;
-                titleLabel.style.unityFontStyleAndWeight = FontStyle.Bold;
-                titleLabel.style.marginTop = 10;
-                titleLabel.style.marginBottom = 5;
+                titleLabel.AddToClassList("title-label");
                 root.Add(titleLabel);
 
                 // 해당 MonoBehaviour의 치트 메소드들을 담을 컨테이너 (세로 배치)
                 VisualElement methodsContainer = new VisualElement();
-                methodsContainer.style.flexDirection = FlexDirection.Column;
-                methodsContainer.style.marginBottom = 10;
+                methodsContainer.AddToClassList("methods-container");
 
                 int methodCount = cheatData.Methods.Count;
                 for (int m = 0; m < methodCount; m++)
@@ -121,18 +117,17 @@ namespace EasyCheatPanel
                         {
                             // 수평으로 배치할 컨테이너 생성
                             VisualElement paramContainer = new VisualElement();
-                            paramContainer.style.flexDirection = FlexDirection.Row;
-                            paramContainer.style.marginBottom = 2;
+                            paramContainer.AddToClassList("param-container");
 
                             // 파라미터 이름 레이블
                             Label paramLabel = new Label(param.Name + ":");
-                            paramLabel.style.minWidth = 80;
+                            paramLabel.AddToClassList("param-label");
                             paramContainer.Add(paramLabel);
 
                             // 텍스트 입력 필드
                             TextField inputField = new TextField();
                             inputField.value = "";
-                            inputField.style.flexGrow = 1;
+                            inputField.AddToClassList("param-text-field");
                             paramContainer.Add(inputField);
 
                             // 파라미터와 입력 필드 매핑 저장
@@ -171,7 +166,7 @@ namespace EasyCheatPanel
                     {
                         text = methodData.DisplayName
                     };
-                    invokeButton.style.marginTop = 2;
+                    invokeButton.AddToClassList("invoke-button");
                     methodContainer.Add(invokeButton);
 
                     // 메소드 컨테이너를 methodsContainer에 추가

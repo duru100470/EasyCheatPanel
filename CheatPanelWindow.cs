@@ -9,6 +9,7 @@ namespace EasyCheatPanel
     public class CheatPanelWindow : EditorWindow
     {
         [SerializeField] private VisualTreeAsset _visualTreeAsset;
+        [SerializeField] private StyleSheet _styleSheet;
 
         [MenuItem("Tools/Cheat Panel")]
         private static void ShowWindow()
@@ -21,6 +22,11 @@ namespace EasyCheatPanel
         {
             VisualElement root = rootVisualElement;
             root.Clear();
+
+            if (_styleSheet != null)
+            {
+                root.styleSheets.Add(_styleSheet);
+            }
 
             var data = CheatPanelUtility.GetCheatMonoDataList();
             root.Add(CheatPanelUtility.CreateCheatPanelView(data));

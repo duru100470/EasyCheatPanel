@@ -1,0 +1,25 @@
+/* CheatPanelStyles.uss */
+.title-label {
+    font-size: 18px;
+    -unity-font-style: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.param-label {
+    min-width: 80px;
+}
+
+.methods-container {
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.param-container {
+    flex-direction: row;
+    margin-bottom: 2px;
+}
+
+.invoke-button {
+    margin-top: 2px;
+}
