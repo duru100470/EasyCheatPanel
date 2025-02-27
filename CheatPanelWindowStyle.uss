@@ -1,0 +1,39 @@
+/* CheatPanelStyles.uss */
+.title-label {
+    font-size: 18px;
+    -unity-font-style: bold;
+    margin-top: 10px;
+    margin-bottom: 5px;
+}
+
+.param-label {
+    min-width: 80px;
+}
+
+.param-text-field {
+    flex-grow: 1;
+}
+
+.param-dropdown-field {
+    flex-grow: 1;
+}
+
+.methods-container {
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.param-container {
+    flex-direction: row;
+    margin-bottom: 2px;
+}
+
+.invoke-button {
+    margin-top: 2px;
+}
+
+.separator {
+    height: 1px;
+    background-color: gray;
+    margin-bottom: 2px;
+}
