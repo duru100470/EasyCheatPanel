@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEditor;
 using UnityEngine.UIElements;
 
-namespace EasyCheatPanel
+namespace EasyCheatPanel.Editor
 {
     public class CheatPanelWindow : EditorWindow
     {
