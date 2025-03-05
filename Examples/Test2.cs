@@ -18,10 +18,11 @@ public class Test2 : MonoBehaviour
     }
 
     [CheatMethod("Another Test")]
-    private void Test(int integer, string name, string description)
+    private void Test(int integer, string name, string description, bool isReal)
     {
         Debug.Log(integer);
         Debug.Log(name);
         Debug.Log(description);
+        Debug.Log(isReal);
     }
 }

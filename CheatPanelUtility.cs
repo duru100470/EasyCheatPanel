@@ -195,15 +195,22 @@ namespace EasyCheatPanel
                         {
                             dropdownField.value = choices[0];
                         }
-                        dropdownField.AddToClassList("param-dropdown-field");
+                        dropdownField.AddToClassList("param-field");
                         inputField = dropdownField;
+                    }
+                    else if (param.ParameterType == typeof(bool))
+                    {
+                        // Toggle 생성
+                        ToggleStringField toggle = new ToggleStringField();
+                        toggle.AddToClassList("param-field");
+                        inputField = toggle;
                     }
                     else
                     {
                         // 기본 TextField 생성
                         TextField textField = new TextField();
                         textField.value = "";
-                        textField.AddToClassList("param-text-field");
+                        textField.AddToClassList("param-field");
                         inputField = textField;
                     }
 

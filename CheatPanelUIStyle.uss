@@ -10,12 +10,7 @@
     min-width: 40%;
 }
 
-.param-text-field {
-    font-size: 40px;
-    flex-grow: 1;
-}
-
-.param-dropdown-field {
+.param-field {
     font-size: 40px;
     flex-grow: 1;
 }

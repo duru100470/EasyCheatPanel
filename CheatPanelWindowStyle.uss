@@ -10,11 +10,7 @@
     min-width: 80px;
 }
 
-.param-text-field {
-    flex-grow: 1;
-}
-
-.param-dropdown-field {
+.param-field {
     flex-grow: 1;
 }
 
