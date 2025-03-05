@@ -117,11 +117,20 @@ namespace EasyCheatPanel
                         bool conversionSuccess = true;
                         for (int i = 0; i < parameters.Length; i++)
                         {
-                            string inputValue = paramFields[i].Item2.value;
+                            object inputValue = paramFields[i].Item2.Value;
+
                             try
                             {
-                                // 입력값을 해당 파라미터 타입으로 변환 (예: int, float, string 등)
-                                parameterValues[i] = Convert.ChangeType(inputValue, parameters[i].ParameterType);
+                                if (inputValue == default && paramFields[i].Item1.IsOptional)
+                                {
+                                    // Optional param일 경우 default값으로
+                                    parameterValues[i] = paramFields[i].Item1.DefaultValue;
+                                }
+                                else
+                                {
+                                    // 입력값을 해당 파라미터 타입으로 변환 (예: int, float, string 등)
+                                    parameterValues[i] = Convert.ChangeType(inputValue, parameters[i].ParameterType);
+                                }
                             }
                             catch (Exception ex)
                             {
@@ -158,10 +167,10 @@ namespace EasyCheatPanel
             return root;
         }
 
-        private static List<(ParameterInfo, BaseField<string>)> CreateParamView(ParameterInfo[] parameters, VisualElement methodContainer)
+        private static List<(ParameterInfo, IFieldWrapper)> CreateParamView(ParameterInfo[] parameters, VisualElement methodContainer)
         {
             // 파라미터와 입력 필드를 함께 저장할 리스트 (나중에 값을 가져오기 위해)
-            List<(ParameterInfo, BaseField<string>)> paramFields = new();
+            List<(ParameterInfo, IFieldWrapper)> paramFields = new();
 
             // 파라미터가 있다면, 입력 필드들을 생성합니다.
             if (parameters.Length > 0)
@@ -179,7 +188,7 @@ namespace EasyCheatPanel
 
                     // DropdownAttribute가 있는지 검사
                     DropdownAttribute dropdownAttr = param.GetCustomAttribute<DropdownAttribute>();
-                    BaseField<string> inputField;
+                    IFieldWrapper fieldWrapper;
 
                     if (dropdownAttr != null)
                     {
@@ -196,14 +205,45 @@ namespace EasyCheatPanel
                             dropdownField.value = choices[0];
                         }
                         dropdownField.AddToClassList("param-field");
-                        inputField = dropdownField;
+                        fieldWrapper = new GenericFieldWrapper<string>(dropdownField);
+                        paramContainer.Add(dropdownField);
                     }
                     else if (param.ParameterType == typeof(bool))
                     {
                         // Toggle 생성
-                        ToggleStringField toggle = new ToggleStringField();
+                        Toggle toggle = new Toggle();
                         toggle.AddToClassList("param-field");
-                        inputField = toggle;
+                        paramContainer.Add(toggle);
+                        fieldWrapper = new GenericFieldWrapper<bool>(toggle);
+                    }
+                    else if (param.ParameterType == typeof(int))
+                    {
+                        // IntegerField 생성
+                        IntegerField intField = new IntegerField();
+                        intField.value = 0;
+                        intField.AddToClassList("param-field");
+                        paramContainer.Add(intField);
+                        fieldWrapper = new GenericFieldWrapper<int>(intField);
+                    }
+                    else if (param.ParameterType == typeof(float))
+                    {
+                        // IntegerField 생성
+                        FloatField floatField = new FloatField();
+                        floatField.value = 0;
+                        floatField.AddToClassList("param-field");
+                        paramContainer.Add(floatField);
+                        fieldWrapper = new GenericFieldWrapper<float>(floatField);
+                    }
+                    else if (param.ParameterType.IsEnum)
+                    {
+                        // enum 타입의 기본값(첫 번째 값)을 가져옵니다.
+                        Enum defaultEnumValue = (Enum)Enum.GetValues(param.ParameterType).GetValue(0);
+
+                        // EnumField를 기본값으로 초기화하여 생성합니다.
+                        EnumField enumField = new EnumField(defaultEnumValue);
+                        enumField.AddToClassList("param-field");
+                        paramContainer.Add(enumField);
+                        fieldWrapper = new GenericFieldWrapper<Enum>(enumField);
                     }
                     else
                     {
@@ -211,12 +251,18 @@ namespace EasyCheatPanel
                         TextField textField = new TextField();
                         textField.value = "";
                         textField.AddToClassList("param-field");
-                        inputField = textField;
+                        paramContainer.Add(textField);
+                        fieldWrapper = new GenericFieldWrapper<string>(textField);
+                    }
+
+                    if (param.IsOptional)
+                    {
+                        paramContainer.AddToClassList("param-optional-container");
+                        fieldWrapper.Value = param.DefaultValue;
                     }
 
                     // 파라미터와 입력 필드 매핑 저장
-                    paramFields.Add((param, inputField));
-                    paramContainer.Add(inputField);
+                    paramFields.Add((param, fieldWrapper));
 
                     // 메소드 컨테이너에 파라미터 UI 추가
                     methodContainer.Add(paramContainer);

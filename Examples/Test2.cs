@@ -18,11 +18,24 @@ public class Test2 : MonoBehaviour
     }
 
     [CheatMethod("Another Test")]
-    private void Test(int integer, string name, string description, bool isReal)
+    private void Test(int integer, string name, bool isReal, TestEnum testEnum = TestEnum.Seven, string description = "asdasd")
     {
         Debug.Log(integer);
         Debug.Log(name);
         Debug.Log(description);
         Debug.Log(isReal);
+        Debug.Log(testEnum);
     }
+}
+
+public enum TestEnum
+{
+    None,
+    One,
+    Two,
+    Three,
+    Four,
+    Five,
+    Six,
+    Seven,
 }
