@@ -39,11 +39,18 @@ namespace EasyCheatPanel
 
                     // 해당 타입의 인스턴스 메소드 중 CheatMethodAttribute가 붙은 메소드를 찾습니다.
                     MethodInfo[] methods = type.GetMethods(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
-                    List<MethodInfo> cheatMethods = new List<MethodInfo>();
+                    List<MethodInfo> cheatMethods = new();
+                    List<CustomPanelData> customs = new();
                     foreach (MethodInfo method in methods)
                     {
                         if (method.IsDefined(typeof(CheatMethodAttribute), false))
+                        {
                             cheatMethods.Add(method);
+                            continue;
+                        }
+
+                        if (method.IsDefined(typeof(CustomCheatPanelAttribute), false))
+                            customs.Add(new CustomPanelData(method));
                     }
 
                     if (cheatMethods.Count == 0)
@@ -69,7 +76,7 @@ namespace EasyCheatPanel
                             string displayName = attribute != null ? attribute.Display : "";
                             cheatMethodDatas.Add(new CheatMethodData(method, displayName));
                         }
-                        cheatMonoDataList.Add(new CheatMonoData(mono, mono.gameObject.name, cheatMethodDatas));
+                        cheatMonoDataList.Add(new CheatMonoData(mono, mono.gameObject.name, cheatMethodDatas, customs));
                     }
                 }
             }
@@ -93,78 +100,88 @@ namespace EasyCheatPanel
                 root.Add(titleLabel);
 
                 // 해당 MonoBehaviour의 치트 메소드들을 담을 컨테이너 (세로 배치)
-                VisualElement methodsContainer = new VisualElement();
-                methodsContainer.AddToClassList("methods-container");
-
-                int methodCount = cheatData.Methods.Count;
-                for (int m = 0; m < methodCount; m++)
-                {
-                    CheatMethodData methodData = cheatData.Methods[m];
-
-                    // 각 메소드 UI를 담을 컨테이너 생성
-                    VisualElement methodContainer = new VisualElement();
-                    methodContainer.style.marginBottom = 5;
-
-                    // 메소드의 파라미터 정보를 가져옵니다.
-                    ParameterInfo[] parameters = methodData.Method.GetParameters();
-
-                    var paramFields = CreateParamView(parameters, methodContainer);
-
-                    // 실행 버튼 생성 (버튼 클릭 시 입력 필드의 값을 가져와 파라미터로 사용)
-                    Button invokeButton = new Button(() =>
-                    {
-                        object[] parameterValues = new object[parameters.Length];
-                        bool conversionSuccess = true;
-                        for (int i = 0; i < parameters.Length; i++)
-                        {
-                            object inputValue = paramFields[i].Item2.Value;
-
-                            try
-                            {
-                                if (inputValue == default && paramFields[i].Item1.IsOptional)
-                                {
-                                    // Optional param일 경우 default값으로
-                                    parameterValues[i] = paramFields[i].Item1.DefaultValue;
-                                }
-                                else
-                                {
-                                    // 입력값을 해당 파라미터 타입으로 변환 (예: int, float, string 등)
-                                    parameterValues[i] = Convert.ChangeType(inputValue, parameters[i].ParameterType);
-                                }
-                            }
-                            catch (Exception ex)
-                            {
-                                Debug.LogError($"파라미터 '{parameters[i].Name}' 변환 실패: {ex.Message}");
-                                conversionSuccess = false;
-                                break;
-                            }
-                        }
-                        if (conversionSuccess)
-                        {
-                            methodData.Method.Invoke(cheatData.Instance, parameterValues);
-                        }
-                    })
-                    {
-                        text = methodData.DisplayName
-                    };
-                    invokeButton.AddToClassList("invoke-button");
-                    methodContainer.Add(invokeButton);
-
-                    // 메소드 컨테이너를 methodsContainer에 추가
-                    methodsContainer.Add(methodContainer);
-
-                    // 각 메소드 사이에 구분선 추가 (마지막 메소드 이후는 생략)
-                    if (m < methodCount - 1)
-                    {
-                        VisualElement separator = new VisualElement();
-                        separator.AddToClassList("separator");
-                        methodsContainer.Add(separator);
-                    }
-                }
+                VisualElement methodsContainer = CreateMethodView(cheatData);
                 root.Add(methodsContainer);
+
+                VisualElement customsContainer = CreateCustomPanelView(cheatData);
+                root.Add(customsContainer);
             }
 
             return root;
+        }
+
+        private static VisualElement CreateMethodView(CheatMonoData cheatData)
+        {
+            VisualElement methodsContainer = new VisualElement();
+            methodsContainer.AddToClassList("methods-container");
+
+            int methodCount = cheatData.Methods.Count;
+            for (int m = 0; m < methodCount; m++)
+            {
+                CheatMethodData methodData = cheatData.Methods[m];
+
+                // 각 메소드 UI를 담을 컨테이너 생성
+                VisualElement methodContainer = new VisualElement();
+                methodContainer.AddToClassList("method-container");
+
+                // 메소드의 파라미터 정보를 가져옵니다.
+                ParameterInfo[] parameters = methodData.Method.GetParameters();
+
+                var paramFields = CreateParamView(parameters, methodContainer);
+
+                // 실행 버튼 생성 (버튼 클릭 시 입력 필드의 값을 가져와 파라미터로 사용)
+                Button invokeButton = new Button(() =>
+                {
+                    object[] parameterValues = new object[parameters.Length];
+                    bool conversionSuccess = true;
+                    for (int i = 0; i < parameters.Length; i++)
+                    {
+                        object inputValue = paramFields[i].Item2.Value;
+
+                        try
+                        {
+                            if (inputValue == default && paramFields[i].Item1.IsOptional)
+                            {
+                                // Optional param일 경우 default값으로
+                                parameterValues[i] = paramFields[i].Item1.DefaultValue;
+                            }
+                            else
+                            {
+                                // 입력값을 해당 파라미터 타입으로 변환 (예: int, float, string 등)
+                                parameterValues[i] = Convert.ChangeType(inputValue, parameters[i].ParameterType);
+                            }
+                        }
+                        catch (Exception ex)
+                        {
+                            Debug.LogError($"파라미터 '{parameters[i].Name}' 변환 실패: {ex.Message}");
+                            conversionSuccess = false;
+                            break;
+                        }
+                    }
+                    if (conversionSuccess)
+                    {
+                        methodData.Method.Invoke(cheatData.Instance, parameterValues);
+                    }
+                })
+                {
+                    text = methodData.DisplayName
+                };
+                invokeButton.AddToClassList("invoke-button");
+                methodContainer.Add(invokeButton);
+
+                // 메소드 컨테이너를 methodsContainer에 추가
+                methodsContainer.Add(methodContainer);
+
+                // 각 메소드 사이에 구분선 추가 (마지막 메소드 이후는 생략)
+                if (m < methodCount - 1)
+                {
+                    VisualElement separator = new VisualElement();
+                    separator.AddToClassList("separator");
+                    methodsContainer.Add(separator);
+                }
+            }
+
+            return methodsContainer;
         }
 
         private static List<(ParameterInfo, IFieldWrapper)> CreateParamView(ParameterInfo[] parameters, VisualElement methodContainer)
@@ -294,6 +311,38 @@ namespace EasyCheatPanel
         {
             attribute = param.GetCustomAttribute<T>();
             return attribute != null;
+        }
+
+        private static VisualElement CreateCustomPanelView(CheatMonoData cheatData)
+        {
+            VisualElement customsContainer = new VisualElement();
+            customsContainer.AddToClassList("customs-container");
+
+            int methodCount = cheatData.CustomPanels.Count;
+            for (int m = 0; m < methodCount; m++)
+            {
+                CustomPanelData customData = cheatData.CustomPanels[m];
+
+                // 각 메소드 UI를 담을 컨테이너 생성
+                VisualElement customContainer = new VisualElement();
+                customContainer.AddToClassList("custom-container");
+
+                var content = customData.Method.Invoke(cheatData.Instance, null) as VisualElement;
+                customContainer.Add(content);
+
+                // 메소드 컨테이너를 methodsContainer에 추가
+                customsContainer.Add(customContainer);
+
+                // 각 메소드 사이에 구분선 추가 (마지막 메소드 이후는 생략)
+                if (m < methodCount - 1)
+                {
+                    VisualElement separator = new VisualElement();
+                    separator.AddToClassList("separator");
+                    customsContainer.Add(separator);
+                }
+            }
+
+            return customsContainer;
         }
     }
 }

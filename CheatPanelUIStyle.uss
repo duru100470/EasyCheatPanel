@@ -21,7 +21,20 @@
 
 .methods-container {
     flex-direction: column;
-    margin-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+.customs-container {
+    flex-direction: column;
+    margin-bottom: 20px;
+}
+
+.method-container {
+    margin-bottom: 5px;
+}
+
+.custom-container {
+    margin-bottom: 5px;
 }
 
 .param-container {

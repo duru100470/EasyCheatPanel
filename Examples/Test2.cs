@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using EasyCheatPanel;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Test2 : MonoBehaviour
 {
@@ -31,6 +32,38 @@ public class Test2 : MonoBehaviour
     private void TestMethod([DynamicDropdown(typeof(TestDropdownProvider))] string name)
     {
         Debug.Log(name);
+    }
+
+    [CustomCheatPanel]
+    private VisualElement TestCustomPanel()
+    {
+        var panel = new VisualElement();
+        panel.Add(new Label("TEST"));
+
+        var btn = new Button(() =>
+        {
+            TestMethod("Hello");
+        });
+        btn.style.height = 50;
+        panel.Add(btn);
+
+        return panel;
+    }
+
+    [CustomCheatPanel]
+    private VisualElement TestCustomPanel2()
+    {
+        var panel = new VisualElement();
+        panel.Add(new Label("TEST"));
+
+        var btn = new Button(() =>
+        {
+            TestMethod("Hello");
+        });
+        btn.style.height = 50;
+        panel.Add(btn);
+
+        return panel;
     }
 
     public class TestDropdownProvider : IDropdownProvider

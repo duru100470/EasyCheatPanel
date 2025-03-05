@@ -13,6 +13,12 @@ namespace EasyCheatPanel
         }
     }
 
+    [AttributeUsage(AttributeTargets.Method, AllowMultiple = false)]
+    public class CustomCheatPanelAttribute : Attribute
+    {
+        public CustomCheatPanelAttribute() { }
+    }
+
     [AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]
     public class CheatFieldAttribute : Attribute
     {
