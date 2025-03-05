@@ -186,11 +186,29 @@ namespace EasyCheatPanel
                     paramLabel.AddToClassList("param-label");
                     paramContainer.Add(paramLabel);
 
-                    // DropdownAttribute가 있는지 검사
-                    DropdownAttribute dropdownAttr = param.GetCustomAttribute<DropdownAttribute>();
                     IFieldWrapper fieldWrapper;
 
-                    if (dropdownAttr != null)
+                    if (HasAttribute<DynamicDropdownAttribute>(param, out var dynamicDropdownAttr))
+                    {
+                        IDropdownProvider provider = (IDropdownProvider)Activator.CreateInstance(dynamicDropdownAttr.ProviderType);
+
+                        // DropdownField 생성 및 어트리뷰트의 object[]를 문자열 리스트로 변환하여 아이템으로 사용
+                        DropdownField dropdownField = new DropdownField();
+                        List<string> choices = new List<string>();
+                        foreach (object item in provider.GetItems())
+                        {
+                            choices.Add(item.ToString());
+                        }
+                        dropdownField.choices = choices;
+                        if (choices.Count > 0)
+                        {
+                            dropdownField.value = choices[0];
+                        }
+                        dropdownField.AddToClassList("param-field");
+                        fieldWrapper = new GenericFieldWrapper<string>(dropdownField);
+                        paramContainer.Add(dropdownField);
+                    }
+                    else if (HasAttribute<DropdownAttribute>(param, out var dropdownAttr))
                     {
                         // DropdownField 생성 및 어트리뷰트의 object[]를 문자열 리스트로 변환하여 아이템으로 사용
                         DropdownField dropdownField = new DropdownField();
@@ -270,6 +288,12 @@ namespace EasyCheatPanel
             }
 
             return paramFields;
+        }
+
+        private static bool HasAttribute<T>(ParameterInfo param, out T attribute) where T : Attribute
+        {
+            attribute = param.GetCustomAttribute<T>();
+            return attribute != null;
         }
     }
 }

@@ -26,7 +26,22 @@ public class Test2 : MonoBehaviour
         Debug.Log(isReal);
         Debug.Log(testEnum);
     }
+
+    [CheatMethod("Another Test 2")]
+    private void TestMethod([DynamicDropdown(typeof(TestDropdownProvider))] string name)
+    {
+        Debug.Log(name);
+    }
+
+    public class TestDropdownProvider : IDropdownProvider
+    {
+        public object[] GetItems()
+        {
+            return new object[] { "hello", "world", "color", "sweeper" };
+        }
+    }
 }
+
 
 public enum TestEnum
 {
