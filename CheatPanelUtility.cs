@@ -53,6 +53,30 @@ namespace EasyCheatPanel
                             customs.Add(new CustomPanelData(method));
                     }
 
+                    FieldInfo[] fields = type.GetFields(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    PropertyInfo[] properties = type.GetProperties(BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.Instance);
+                    List<CheatFieldData> cheatFields = new();
+
+                    foreach (FieldInfo field in fields)
+                    {
+                        if (field.IsDefined(typeof(CheatFieldAttribute), false))
+                        {
+                            CheatFieldAttribute attribute = field.GetCustomAttribute<CheatFieldAttribute>();
+                            string displayName = attribute != null ? attribute.Display : "";
+                            cheatFields.Add(new CheatFieldData(new FieldAccessor(field), displayName));
+                        }
+                    }
+
+                    foreach (PropertyInfo property in properties)
+                    {
+                        if (property.IsDefined(typeof(CheatFieldAttribute), false))
+                        {
+                            CheatFieldAttribute attribute = property.GetCustomAttribute<CheatFieldAttribute>();
+                            string displayName = attribute != null ? attribute.Display : "";
+                            cheatFields.Add(new CheatFieldData(new PropertyAccessor(property), displayName));
+                        }
+                    }
+
                     if (cheatMethods.Count == 0)
                         continue;
 
@@ -76,7 +100,7 @@ namespace EasyCheatPanel
                             string displayName = attribute != null ? attribute.Display : "";
                             cheatMethodDatas.Add(new CheatMethodData(method, displayName));
                         }
-                        cheatMonoDataList.Add(new CheatMonoData(mono, mono.gameObject.name, cheatMethodDatas, customs));
+                        cheatMonoDataList.Add(new CheatMonoData(mono, mono.gameObject.name, cheatMethodDatas, cheatFields, customs));
                     }
                 }
             }
@@ -102,6 +126,9 @@ namespace EasyCheatPanel
                 // 해당 MonoBehaviour의 치트 메소드들을 담을 컨테이너 (세로 배치)
                 VisualElement methodsContainer = CreateMethodView(cheatData);
                 root.Add(methodsContainer);
+
+                VisualElement fieldsContainer = CreateFieldView(cheatData);
+                root.Add(fieldsContainer);
 
                 VisualElement customsContainer = CreateCustomPanelView(cheatData);
                 root.Add(customsContainer);
@@ -311,6 +338,43 @@ namespace EasyCheatPanel
         {
             attribute = param.GetCustomAttribute<T>();
             return attribute != null;
+        }
+
+        private static VisualElement CreateFieldView(CheatMonoData cheatData)
+        {
+            VisualElement fieldsContainer = new VisualElement();
+            fieldsContainer.AddToClassList("methods-container");
+
+            int methodCount = cheatData.Fields.Count;
+            for (int m = 0; m < methodCount; m++)
+            {
+                CheatFieldData fieldData = cheatData.Fields[m];
+
+                // 각 메소드 UI를 담을 컨테이너 생성
+                VisualElement fieldContainer = new VisualElement();
+                fieldContainer.AddToClassList("field-container");
+
+                var nameLabel = new Label(fieldData.DisplayName);
+                nameLabel.AddToClassList("param-label");
+                fieldContainer.Add(nameLabel);
+
+                var valueLabel = new Label(fieldData.Accessor.GetValue(cheatData.Instance).ToString());
+                valueLabel.AddToClassList("param-field");
+                fieldContainer.Add(valueLabel);
+
+                // 메소드 컨테이너를 methodsContainer에 추가
+                fieldsContainer.Add(fieldContainer);
+
+                // 각 메소드 사이에 구분선 추가 (마지막 메소드 이후는 생략)
+                if (m < methodCount - 1)
+                {
+                    VisualElement separator = new VisualElement();
+                    separator.AddToClassList("separator");
+                    fieldsContainer.Add(separator);
+                }
+            }
+
+            return fieldsContainer;
         }
 
         private static VisualElement CreateCustomPanelView(CheatMonoData cheatData)

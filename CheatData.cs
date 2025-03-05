@@ -11,12 +11,14 @@ namespace EasyCheatPanel
         public MonoBehaviour Instance { get; }
         public string Name { get; }
         public List<CheatMethodData> Methods { get; }
+        public List<CheatFieldData> Fields { get; }
         public List<CustomPanelData> CustomPanels { get; }
 
-        public CheatMonoData(MonoBehaviour mono, string name, List<CheatMethodData> methods, List<CustomPanelData> customs)
+        public CheatMonoData(MonoBehaviour mono, string name, List<CheatMethodData> methods, List<CheatFieldData> fields, List<CustomPanelData> customs)
         {
             Instance = mono;
             Methods = methods;
+            Fields = fields;
             CustomPanels = customs;
             Name = name;
         }
@@ -33,6 +35,22 @@ namespace EasyCheatPanel
 
             if (string.IsNullOrEmpty(displayName))
                 DisplayName = method.Name;
+            else
+                DisplayName = displayName;
+        }
+    }
+
+    public class CheatFieldData
+    {
+        public string DisplayName { get; }
+        public IValueAccessor Accessor { get; }
+
+        public CheatFieldData(IValueAccessor valueAccessor, string displayName = "")
+        {
+            Accessor = valueAccessor;
+
+            if (string.IsNullOrEmpty(displayName))
+                DisplayName = Accessor.GetName();
             else
                 DisplayName = displayName;
         }

@@ -23,6 +23,24 @@
     margin-bottom: 10px;
 }
 
+.customs-container {
+    flex-direction: column;
+    margin-bottom: 10px;
+}
+
+.method-container {
+    margin-bottom: 5px;
+}
+
+.field-container {
+    flex-direction: row;
+    margin-bottom: 5px;
+}
+
+.custom-container {
+    margin-bottom: 5px;
+}
+
 .param-container {
     flex-direction: row;
     margin-bottom: 2px;

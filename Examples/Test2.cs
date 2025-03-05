@@ -6,6 +6,13 @@ using UnityEngine.UIElements;
 
 public class Test2 : MonoBehaviour
 {
+    [CheatField]
+    public int Count = 5;
+    [CheatField]
+    public int ActualCount => 10;
+    [CheatField]
+    private string Name => "ASDASD";
+
     // Start is called before the first frame update
     void Start()
     {
